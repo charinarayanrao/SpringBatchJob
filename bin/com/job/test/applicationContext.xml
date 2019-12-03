@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+  
+ <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+ <property name="triggers">
+  <list>
+   <ref bean="testJobCronTrigger" />
+  </list>
+ </property>
+ </bean>
+ <bean id="testJobCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+  <property name="jobDetail" ref="testJob" />
+  <!-- run every morning at 6 AM -->
+  <property name="cronExpression" value="0/5 * * * * ?" />
+ </bean>
+  
+ <bean name="testJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+  <property name="jobClass" value="com.job.test.TestJob" />
+  <property name="jobDataAsMap">
+   <map>
+    <entry key="emailService" value-ref="emailService"></entry>
+   </map>
+  </property>
+ </bean>
+   
+ <bean id="emailService" class="com.job.test.EmailService">
+  <property name="mailSender" ref="mailSender"></property>
+ </bean>
+   
+ <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  <property name="defaultEncoding" value="UTF-8"/>
+  <property name="host" value="smtp.gmail.com" />
+  <property name="port" value="465" />
+  <property name="protocol" value="smtps" />
+  <property name="username" value="testfuji000@gmail.com"/>
+  <property name="password" value="Tester@123"/>
+  <property name="javaMailProperties">
+   <props>
+    <prop key="mail.smtps.auth">true</prop>
+    <prop key="mail.smtps.starttls.enable">true</prop>
+    <prop key="mail.smtps.debug">true</prop>
+   </props>
+  </property>
+ </bean>
+   
+</beans>
